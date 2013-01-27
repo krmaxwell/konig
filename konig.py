@@ -66,6 +66,7 @@ if __name__ == "__main__":
     parser.add_argument("-t", "--threshold", help="Threshold for similarity", default=80)
     parser.add_argument("-o", "--output", help="Optional file to save fuzzy hashes")
     parser.add_argument("-i", "--input", help="Optional file with existing fuzzy hashes")
+    parser.add_argument("-f", "--file", help="Optional file for investigation")`
     args = parser.parse_args()
 
     simthreshold = int(args.threshold)
