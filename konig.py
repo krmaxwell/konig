@@ -13,12 +13,15 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# external dependencies
 import ssdeep
 import networkx as nx
 import matplotlib.pyplot as plt
 
+# built-in modules
 import argparse
 import os
+import json
 
 def calculatehashes(directory):
     ourhashes = {}
@@ -55,17 +58,25 @@ if __name__ == "__main__":
     parser.add_argument("-d", "--directory", help="Directory of files to be hashed", default=".")
     # TODO: use this 
     parser.add_argument("-t", "--threshold", help="Threshold for similarity", default=80)
+    parser.add_argument("-o", "--output", help="Optional file to save fuzzy hashes")
     args = parser.parse_args()
+
+    simthreshold = int(args.threshold)
 
     # first calculate all the fuzzy hashes for the files in a directory
     # get this directory from a command-line argument
     print("Calculating fuzzy hashes for all files in %s..." % args.directory)
     malhashes = calculatehashes(args.directory) 
 
+    if args.output:
+        print("Saving hash database...")
+        with open(args.output, 'wb') as f:
+            json.dump(malhashes, f)
+
     # now use these hashes to create an undirected graph of relationships
     # above a given threshold
-    print("Creating graph structure for files with similarity >= 80...")
-    malgraph = creategraph(malhashes, threshold=80)
+    print("Creating graph structure for files with similarity >= %d..." % simthreshold)
+    malgraph = creategraph(malhashes, simthreshold)
 
     # we should draw the graph at this point for visualization
     print("Preparing plot of graph structure...")
