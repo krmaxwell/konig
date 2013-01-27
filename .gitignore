@@ -35,4 +35,4 @@ nosetests.xml
 .pydevproject
 
 # VIM swap files
-.swp
+*.swp
