@@ -43,17 +43,18 @@ def calculatehashes(directory, oldhashes={}):
 
 def creategraph(fuzzyhashes, threshold=50):
     G = nx.Graph()
+    checkedhashes = set()
 
     # iterate over keys in fuzzyhashes
     for k in fuzzyhashes.iterkeys():
         # calculate similarity to all *remaining* hashes
-        # TODO: fix this so we don't repeat ourselves, this is way naive
         for l in fuzzyhashes.iterkeys():
-            if (k != l):        # literally the ONLY optimization so far
+            if (k != l) and l not in checkedhashes:
                 sim = ssdeep.compare(fuzzyhashes[k], fuzzyhashes[l])
                 # if similarity is >= threshold, add it to the graph
                 if sim >= threshold:
                     G.add_edge(k, l, weight=sim)
+        checkedhashes.add(k)
 
     return G
 
