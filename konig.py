@@ -92,6 +92,9 @@ if __name__ == "__main__":
     print("Creating graph structure for files with similarity >= %d..." % simthreshold)
     malgraph = creategraph(malhashes, simthreshold)
 
+    print nx.info(malgraph)
+    print "Graph density: ", nx.density(malgraph)
+
     # we should draw the graph at this point for visualization
     print("Preparing plot of graph structure...")
     nx.draw_spring(malgraph, with_labels=True)
