@@ -66,7 +66,7 @@ if __name__ == "__main__":
     parser.add_argument("-t", "--threshold", help="Threshold for similarity", default=80)
     parser.add_argument("-o", "--output", help="Optional file to save fuzzy hashes")
     parser.add_argument("-i", "--input", help="Optional file with existing fuzzy hashes")
-    parser.add_argument("-f", "--file", help="Optional file for investigation")`
+    parser.add_argument("-f", "--file", help="Optional file for investigation")
     args = parser.parse_args()
 
     simthreshold = int(args.threshold)
@@ -91,6 +91,9 @@ if __name__ == "__main__":
     # above a given threshold
     print("Creating graph structure for files with similarity >= %d..." % simthreshold)
     malgraph = creategraph(malhashes, simthreshold)
+
+    if args.file:
+        malgraph = malgraph.subgraph(nx.node_connected_component(malgraph, args.file)).copy()
 
     print nx.info(malgraph)
     print "Graph density: ", nx.density(malgraph)
