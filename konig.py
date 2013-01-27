@@ -58,6 +58,9 @@ def creategraph(fuzzyhashes, threshold=50):
 
     return G
 
+def graphstats(mygraph):
+
+
 if __name__ == "__main__":
     # handle command-line stuff
     parser = argparse.ArgumentParser()
@@ -90,6 +93,9 @@ if __name__ == "__main__":
     # above a given threshold
     print("Creating graph structure for files with similarity >= %d..." % simthreshold)
     malgraph = creategraph(malhashes, simthreshold)
+
+    print malgraph.info()
+    print "Graph density: ", malgraph.density()
 
     # we should draw the graph at this point for visualization
     print("Preparing plot of graph structure...")
