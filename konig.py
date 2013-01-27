@@ -32,6 +32,8 @@ def creategraph(fuzzyhashes, threshold=50):
                 if sim >= threshold:
                     G.add_edge(k, l, weight=sim)
 
+    return G
+
 if __name__ == "__main__":
     # handle command-line stuff
     parser = argparse.ArgumentParser()
