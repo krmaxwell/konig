@@ -7,3 +7,4 @@ Requirements
 ------------
 * [ssdeep](http://pypi.python.org/pypi/ssdeep)
 * [NetworkX](http://networkx.github.com)
+* [matplotlib](http://matplotlib.org/)
