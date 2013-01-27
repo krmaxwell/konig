@@ -23,7 +23,7 @@ import argparse
 import os
 import json
 
-def calculatehashes(directory):
+def calculatehashes(directory, oldhashes={}):
     ourhashes = {}
 
     # get list of all files in the directory
@@ -31,8 +31,13 @@ def calculatehashes(directory):
 
     # iterate through each file
     for f in dirlist:
-        # calculate hash and store
-        ourhashes[f] = ssdeep.hash_from_file(directory+'/'+f)
+        # skip files already in hash DB
+        if f in oldhashes:
+            # use previously-calculated hash
+            ourhashes[f] = oldhashes[f]
+        else:
+            # calculate hash and store
+            ourhashes[f] = ssdeep.hash_from_file(directory+'/'+f)
 
     return ourhashes
 
@@ -59,14 +64,21 @@ if __name__ == "__main__":
     # TODO: use this 
     parser.add_argument("-t", "--threshold", help="Threshold for similarity", default=80)
     parser.add_argument("-o", "--output", help="Optional file to save fuzzy hashes")
+    parser.add_argument("-i", "--input", help="Optional file with existing fuzzy hashes")
     args = parser.parse_args()
 
     simthreshold = int(args.threshold)
+    oldhashes = {}
 
+    if args.input:
+        print("Loading saved hash database")
+        with open(args.input, 'rb') as f:
+            oldhashes=json.load(f)
+            
     # first calculate all the fuzzy hashes for the files in a directory
     # get this directory from a command-line argument
     print("Calculating fuzzy hashes for all files in %s..." % args.directory)
-    malhashes = calculatehashes(args.directory) 
+    malhashes = calculatehashes(args.directory, oldhashes) 
 
     if args.output:
         print("Saving hash database...")
