@@ -18,7 +18,7 @@ def calculatehashes(directory):
 
     return ourhashes
 
-def creategraph(fuzzyhashes, threshold=50)
+def creategraph(fuzzyhashes, threshold=50):
     G = nx.Graph()
 
     # iterate over keys in fuzzyhashes
@@ -27,7 +27,7 @@ def creategraph(fuzzyhashes, threshold=50)
         # TODO: fix this so we don't repeat ourselves, this is way naive
         for l in fuzzyhashes.iterkeys():
             if (k != l):        # literally the ONLY optimization so far
-                sim = ssdeep.compare(ourhashes[k], ourhashes[l])
+                sim = ssdeep.compare(fuzzyhashes[k], fuzzyhashes[l])
                 # if similarity is >= threshold, add it to the graph
                 if sim >= threshold:
                     G.add_edge(k, l, weight=sim)
@@ -42,7 +42,7 @@ if __name__ == "__main__":
 
     # first calculate all the fuzzy hashes for the files in a directory
     # get this directory from a command-line argument
-    print("Calculating fuzzy hashes for all files in %s...", args.directory)
+    print("Calculating fuzzy hashes for all files in %s..." % args.directory)
     malhashes = calculatehashes(args.directory) 
 
     # now use these hashes to create an undirected graph of relationships
@@ -52,5 +52,5 @@ if __name__ == "__main__":
 
     # we should draw the graph at this point for visualization
     print("Preparing plot of graph structure...")
-    nx.draw_circular(malgraph, with_labels=False)
+    nx.draw_spring(malgraph, with_labels=False)
     plt.show()
