@@ -13,6 +13,7 @@ Usage
     -t    Threshold of similarity before files are considered linked, on 0-100 scale. Defaults to 80 if not specified.
     -o    Output file for fuzzy hashes once calculated. Stored in JSON format.
     -i    Input file for previously-calculated fuzzy hashes. Must be in JSON format (e.g. created with -o above). Note that any files listed here will NOT be rehashed, even if they have changed.
+    -f    Investigation file. Konig will calculate the graph, then present the connected component graph containing this file (everything related to it, directly or indirectly).
 
 Note that once the graph displays, you can click on the Zoom-to-rectangle button to select an area for closer examination. See the [matplotlib docs](http://matplotlib.org/users/navigation_toolbar.html) for more information.
 
