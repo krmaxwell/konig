@@ -67,6 +67,8 @@ if __name__ == "__main__":
     parser.add_argument("-o", "--output", help="Optional file to save fuzzy hashes")
     parser.add_argument("-i", "--input", help="Optional file with existing fuzzy hashes")
     parser.add_argument("-f", "--file", help="Optional file for investigation")
+    parser.add_argument("-e", "--export", help="Optional filename for exporting graph (as GraphML)")
+
     args = parser.parse_args()
 
     simthreshold = int(args.threshold)
@@ -94,6 +96,10 @@ if __name__ == "__main__":
 
     if args.file:
         malgraph = malgraph.subgraph(nx.node_connected_component(malgraph, args.file)).copy()
+
+    if args.export:
+        nx.write_graphml(malgraph, args.export)
+        print('Exported graph to %s' % args.export)
 
     print nx.info(malgraph)
     print "Graph density: ", nx.density(malgraph)
