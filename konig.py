@@ -68,6 +68,7 @@ if __name__ == "__main__":
     parser.add_argument("-i", "--input", help="Optional file with existing fuzzy hashes")
     parser.add_argument("-f", "--file", help="Optional file for investigation")
     parser.add_argument("-e", "--export", help="Optional filename for exporting graph (as GraphML)")
+    parser.add_argument("-n", "--noplot", help="Do not plot the graph using matplotlib", action="store_true")
 
     args = parser.parse_args()
 
@@ -104,7 +105,8 @@ if __name__ == "__main__":
     print nx.info(malgraph)
     print "Graph density: ", nx.density(malgraph)
 
-    # we should draw the graph at this point for visualization
-    print("Preparing plot of graph structure...")
-    nx.draw_spring(malgraph, with_labels=True)
-    plt.show()
+    if not args.noplot:
+        # we should draw the graph at this point for visualization
+        print("Preparing plot of graph structure...")
+        nx.draw_spring(malgraph, with_labels=True)
+        plt.show()

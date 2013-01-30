@@ -15,8 +15,9 @@ Usage
     -i    Input file for previously-calculated fuzzy hashes. Must be in JSON format (e.g. created with -o above). Note that any files listed here will NOT be rehashed, even if they have changed.
     -f    Investigation file. Konig will calculate the graph, then present the connected component graph containing this file (everything related to it, directly or indirectly).
     -e    Export file. Save your graph as GraphML for use in other tools.
+    -n    Do not plot (interactively). GraphML export is not affected by this switch.
 
-Note that once the graph displays, you can click on the Zoom-to-rectangle button to select an area for closer examination. See the [matplotlib docs](http://matplotlib.org/users/navigation_toolbar.html) for more information.
+Note that once the graph displays, you can click on the Zoom-to-rectangle button to select an area for closer examination. See the [matplotlib docs](http://matplotlib.org/users/navigation_toolbar.html) for more information. Alternately, you can import the GraphML file into [Gephi](https://gephi.org) or similar.
 
 Requirements
 ------------
