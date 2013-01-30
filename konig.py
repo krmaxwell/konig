@@ -37,7 +37,7 @@ def calculatehashes(directory, oldhashes={}):
             ourhashes[f] = oldhashes[f]
         else:
             # calculate hash and store
-            ourhashes[f] = ssdeep.hash_from_file(directory+'/'+f)
+            ourhashes[f] = ssdeep.hash_from_file(os.path.join(directory,'/',f))
 
     return ourhashes
 
