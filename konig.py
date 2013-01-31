@@ -22,6 +22,7 @@ import matplotlib.pyplot as plt
 import argparse
 import os
 import json
+import pickle
 
 def calculatehashes(directory, oldhashes={}):
     ourhashes = {}
@@ -62,12 +63,13 @@ if __name__ == "__main__":
     # handle command-line stuff
     parser = argparse.ArgumentParser()
     parser.add_argument("-d", "--directory", help="Directory of files to be hashed", default=".")
-    # TODO: use this 
     parser.add_argument("-t", "--threshold", help="Threshold for similarity", default=80)
     parser.add_argument("-o", "--output", help="Optional file to save fuzzy hashes")
-    parser.add_argument("-i", "--input", help="Optional file with existing fuzzy hashes")
+    parser.add_argument("-i", "--input", help="Optional JSON file with existing fuzzy hashes")
     parser.add_argument("-f", "--file", help="Optional file for investigation")
     parser.add_argument("-e", "--export", help="Optional filename for exporting graph (as GraphML)")
+    parser.add_argument("-l", "--load", help="Optional filename for loading graph object")
+    parser.add_argument("-s", "--save", help="Optional filename for saving graph object")
     parser.add_argument("-n", "--noplot", help="Do not plot the graph using matplotlib", action="store_true")
 
     args = parser.parse_args()
@@ -79,7 +81,7 @@ if __name__ == "__main__":
         print("Loading saved hash database")
         with open(args.input, 'rb') as f:
             oldhashes=json.load(f)
-            
+
     # first calculate all the fuzzy hashes for the files in a directory
     # get this directory from a command-line argument
     print("Calculating fuzzy hashes for all files in %s..." % args.directory)
@@ -90,17 +92,27 @@ if __name__ == "__main__":
         with open(args.output, 'wb') as f:
             json.dump(malhashes, f)
 
-    # now use these hashes to create an undirected graph of relationships
-    # above a given threshold
-    print("Creating graph structure for files with similarity >= %d..." % simthreshold)
-    malgraph = creategraph(malhashes, simthreshold)
-
+    if args.load:
+        print("Loading saved graph object from %s" % args.load)
+        with open(args.load, "rb") as loadfile:
+            malgraph=pickle.load(loadfile)
+    else:
+        # now use these hashes to create an undirected graph of relationships
+        # above a given threshold
+        print("Creating graph structure for files with similarity >= %d..." % simthreshold)
+        malgraph = creategraph(malhashes, simthreshold)
+    
     if args.file:
         malgraph = malgraph.subgraph(nx.node_connected_component(malgraph, args.file)).copy()
 
     if args.export:
         nx.write_graphml(malgraph, args.export)
         print('Exported graph to %s' % args.export)
+
+    if args.save:
+        print("Saving graph object to %s" % args.save)
+        with open(args.save,"wb") as savefile:
+            pickle.dump(malgraph, savefile)
 
     print nx.info(malgraph)
     print "Graph density: ", nx.density(malgraph)
