@@ -40,3 +40,6 @@ nosetests.xml
 # various test files
 *.json
 *.html
+
+# graph files
+*.graphml
