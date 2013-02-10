@@ -61,10 +61,10 @@ def creategraph(fuzzyhashes, threshold=50):
     return G
 
 def main():
-    # handle command-line stuff
+    # handle command-line stuff to override any config file options
     parser = argparse.ArgumentParser()
-    parser.add_argument("-d", "--directory", help="Directory of files to be hashed", default=".")
-    parser.add_argument("-t", "--threshold", help="Threshold for similarity", default=80)
+    parser.add_argument("-d", "--directory", help="Directory of files to be hashed")
+    parser.add_argument("-t", "--threshold", help="Threshold for similarity")
     parser.add_argument("-o", "--output", help="Optional file to save fuzzy hashes")
     parser.add_argument("-i", "--input", help="Optional JSON file with existing fuzzy hashes")
     parser.add_argument("-f", "--file", help="Optional file for investigation")
@@ -75,46 +75,81 @@ def main():
 
     args = parser.parse_args()
 
-    simthreshold = int(args.threshold)
-    oldhashes = {}
+    # read defaults first
+    config = ConfigParser.RawConfigParser(allow_no_value=True)
+    try:
+        config.read('konig.cfg')
+    except:
+        print('Error reading configuration file, proceeding')
 
+    # threshold for two files to be related
+    if int(args.threshold):
+        kthreshold = int(args.threshold)
+    else:
+        try:
+            kthreshold = config.getint('Konig','threshold')
+        except:
+            kthreshold = 90
+            print('Did not find threshold, using default %d', 
+                  kthreshold
+
+    # load old hashes if specified
     if args.input:
+        inputfile = args.input
+    elif config.get('Konig','hashdb'):
+        inputfile = config.get('Konig','hashdb')
+    else:
+        inputfile = None
+    
+    oldhashes = {}
+    if inputfile:
         print("Loading saved hash database")
         with open(args.input, 'rb') as f:
             oldhashes=json.load(f)
 
-    # first calculate all the fuzzy hashes for the files in a directory
-    # get this directory from a command-line argument
-    print("Calculating fuzzy hashes for all files in %s..." % args.directory)
-    malhashes = calculatehashes(args.directory, oldhashes) 
-
-    if args.output:
-        print("Saving hash database...")
-        with open(args.output, 'wb') as f:
-            json.dump(malhashes, f)
-
+    # load graph if specified
     if args.load:
         print("Loading saved graph object from %s" % args.load)
         with open(args.load, "rb") as loadfile:
             malgraph=pickle.load(loadfile)
     else:
-        # now use these hashes to create an undirected graph of relationships
-        # above a given threshold
-        print("Creating graph structure for files with similarity >= %d..." % simthreshold)
-        malgraph = creategraph(malhashes, simthreshold)
+        # calculate all the fuzzy hashes for the files in a directory
+        if args.directory:
+            hashdir = args.directory
+        elif config.get('Konig','hashdir'):
+            hashdir = config.get('Konig','hashdir')
+        else:
+            hashdir = '.'
     
+        print("Calculating fuzzy hashes for all files in %s..." % hashdir)
+        malhashes = calculatehashes(hashdir, oldhashes) 
+    
+        # save new hashes if specified
+        if args.output:
+            print("Saving hash database...")
+            with open(args.output, 'wb') as f:
+                json.dump(malhashes, f)
+    
+        # now use these hashes to create an undirected graph of relationships
+        print("Creating graph structure for files with similarity >= %d..." % kthreshold)
+        malgraph = creategraph(malhashes, kthreshold)
+        
+    # calculate subgraph if file specified
     if args.file:
         malgraph = malgraph.subgraph(nx.node_connected_component(malgraph, args.file)).copy()
 
+    # export graph to file if specified
     if args.export:
         nx.write_graphml(malgraph, args.export)
         print('Exported graph to %s' % args.export)
 
+    # save graph to file if specified
     if args.save:
         print("Saving graph object to %s" % args.save)
         with open(args.save,"wb") as savefile:
             pickle.dump(malgraph, savefile)
 
+    # Basic data about the graph
     print nx.info(malgraph)
     print "Graph density: ", nx.density(malgraph)
 
