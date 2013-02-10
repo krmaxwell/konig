@@ -13,16 +13,17 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# external dependencies
-import ssdeep
-import networkx as nx
-import matplotlib.pyplot as plt
-
 # built-in modules
 import argparse
 import os
 import json
 import pickle
+import ConfigParser
+
+# external dependencies
+import ssdeep
+import networkx as nx
+import matplotlib.pyplot as plt
 
 def calculatehashes(directory, oldhashes={}):
     ourhashes = {}
@@ -59,7 +60,7 @@ def creategraph(fuzzyhashes, threshold=50):
 
     return G
 
-if __name__ == "__main__":
+def main():
     # handle command-line stuff
     parser = argparse.ArgumentParser()
     parser.add_argument("-d", "--directory", help="Directory of files to be hashed", default=".")
@@ -122,3 +123,6 @@ if __name__ == "__main__":
         print("Preparing plot of graph structure...")
         nx.draw_spring(malgraph, with_labels=True)
         plt.show()
+
+if __name__ == "__main__":
+    main()
