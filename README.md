@@ -22,7 +22,7 @@ Note that once the graph displays, you can click on the Zoom-to-rectangle button
 Requirements
 ------------
 * [ssdeep](http://pypi.python.org/pypi/ssdeep)
-* [NetworkX](http://networkx.github.com)
+* [NetworkX](http://networkx.github.io)
 * [matplotlib](http://matplotlib.org/)
 
 Copyright 2013, Kyle Maxwell. Licensed under GPL v3. See LICENSE for more details.
